@@ -1,8 +1,7 @@
 from ctypes import *
 
-# stdcall调用约定：两种加载方式
-# DAQdll = ctypes.windll.LoadLibrary("dllpath")
-DAQdll = cdll.LoadLibrary("./Usb_AMC2XE_Dll.dll")
+CDLL('libusb-1.0.so', RTLD_GLOBAL)
+DAQdll = cdll.LoadLibrary('./LibUSB_AMC2XE.so')
 
 # 首先打开设备
 erro = DAQdll.OpenUSB_2XE()
@@ -24,10 +23,10 @@ erro = DAQdll.DeltMov_2XE(0, 1, 1, 1, 0, 1000, 5000, 10000, 0, 100, 100);
 # 函数需要返回很多结果值，使用unsigned int*，unsigned char*传入一个地址，读取结果写入这个指针所指向的地址，
 # 所以需要先申明一个unsigned int，unsigned char类型的变量，然后使用byref得到这个变量地址当做指针传给函数
 Pos = c_uint(1)  #
-RunState = c_char(1)
+RunState = c_int(1)
 IOState = c_char(1)
 CEMG = c_char(1)
-while RunState > 0:  # X轴状态停止时的值为0，当读取到运行状态为0 ，表示电机已经运行到指定位置
+while RunState.value > 0:  # X轴状态停止时的值为0，当读取到运行状态为0 ，表示电机已经运行到指定位置
     # 读取X轴状态
     erro = DAQdll.Read_Position_2XE(0, 0, byref(Pos), byref(RunState), byref(IOState), byref(CEMG))
     # 打印X轴的逻辑位置
