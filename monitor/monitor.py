@@ -3,7 +3,7 @@
 # @FileName  :monitor.py
 # @Time      :2024/3/6 
 # @Author    :SophistGuaPi
-
+import time
 from ctypes import *
 
 class monitor:
@@ -20,6 +20,10 @@ class monitor:
         # 初始化Y轴
         erro = self.DAQdll.Set_Axs_2XE(0, 1, 0, 0, 0, 0)
         erro = self.DAQdll.Set_Axs_2XE(0, 1, 1, 0, 0, 0)
+        self.Pos = c_uint(1)  #
+        self.RunState = c_int(1)
+        self.IOState = c_char(1)
+        self.CEMG = c_char(1)
 
     def del_move(self, x_axis, y_axis):
         # x轴定长运动,正向运行，直线加减速，初始速度1000脉冲每秒，运行速度5000脉冲每秒，运行距离10000脉冲，加速时间100ms，减速时间100ms
@@ -31,17 +35,15 @@ class monitor:
         # 函数需要返回很多结果值，使用unsigned int*，unsigned char*传入一个地址，读取结果写入这个指针所指向的地址，
         # 所以需要先申明一个unsigned int，unsigned char类型的变量，然后使用byref得到这个变量地址当做指针传给函数
     def get_position(self):
-        Pos = c_uint(1)  #
-        RunState = c_int(1)
-        IOState = c_char(1)
-        CEMG = c_char(1)
-        while RunState.value > 0:  # X轴状态停止时的值为0，当读取到运行状态为0 ，表示电机已经运行到指定位置
-            # 读取X轴状态
-            erro = self.DAQdll.Read_Position_2XE(0, 0, byref(Pos), byref(RunState), byref(IOState), byref(CEMG))
+        # 读取X轴状态
+        erro = self.DAQdll.Read_Position_2XE(0, 0, byref(self.Pos), byref(self.RunState), byref(self.IOState),
+                                             byref(self.CEMG))
+        while self.RunState.value > 0:
             # 打印X轴的逻辑位置
-            print(Pos.value)
-        # 最后需要关闭设备
-        erro = self.DAQdll.CloseUSB_2XE()
+            erro = self.DAQdll.Read_Position_2XE(0, 0, byref(self.Pos), byref(self.RunState), byref(self.IOState),
+                                                 byref(self.CEMG))
+            print("pos:"+str(self.Pos.value))
+            print("RunState:"+str(self.RunState.value))
 
 if __name__ == "__main__":
     pass

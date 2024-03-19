@@ -16,6 +16,7 @@ class measure:
         bytesize = serial.EIGHTBITS  # 数据位
         stopbits = serial.STOPBITS_ONE  # 停止位
         self.ser = serial.Serial(port, baudrate, bytesize, stopbits=stopbits, timeout=timeout)
+        self.data = None
 
 
         # 异步读取数据的线程函数
@@ -23,7 +24,10 @@ class measure:
         def read():
             while True:
                 data = self.ser.readline()
-                print(data.decode('utf-8'))
+                if data:
+                    self.data = data
+                    print(self.data.decode('utf-8'))
+                    break
 
         # 创建并运行线程
         self.thread = threading.Thread(target=read)

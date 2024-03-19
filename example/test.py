@@ -27,5 +27,7 @@ while RunState.value > 0:  # X轴状态停止时的值为0，当读取到运行�
     erro = DAQdll.Read_Position_2XE(0, 0, byref(Pos), byref(RunState), byref(IOState), byref(CEMG))
     # 打印X轴的逻辑位置
     print(Pos.value)
+
+erro = DAQdll.DeltMov_2XE(0, 0, 0, 0, 0, 1000, 5000, 10000, 0, 100, 100)
 # 最后需要关闭设备
 erro = DAQdll.CloseUSB_2XE()
