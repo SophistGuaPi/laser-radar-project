@@ -22,6 +22,7 @@ class gui:
         self.ui.pushButton_6.clicked.connect(self.clicked_pushbutton_6)
         self.ui.pushButton_4.clicked.connect(self.clicked_pushbutton_4)
         self.ui.pushButton_3.clicked.connect(self.clicked_pushbutton_3)
+        self.ui.
         MainWindow.show()
         sys.exit(app.exec_())
 
