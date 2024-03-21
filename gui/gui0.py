@@ -9,7 +9,6 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-import sys
 
 
 class Ui_MainWindow(object):
@@ -46,13 +45,13 @@ class Ui_MainWindow(object):
         self.verticalLayout_3 = QtWidgets.QVBoxLayout()
         self.verticalLayout_3.setObjectName("verticalLayout_3")
         self.pushButton = QtWidgets.QPushButton(self.verticalLayoutWidget_10)
-        self.pushButton.setObjectName("pushButton")
         self.pushButton.setCheckable(True)
         self.pushButton.setChecked(True)
+        self.pushButton.setObjectName("pushButton")
         self.verticalLayout_3.addWidget(self.pushButton)
         self.pushButton_2 = QtWidgets.QPushButton(self.verticalLayoutWidget_10)
-        self.pushButton_2.setObjectName("pushButton_2")
         self.pushButton_2.setCheckable(True)
+        self.pushButton_2.setObjectName("pushButton_2")
         self.verticalLayout_3.addWidget(self.pushButton_2)
         self.verticalLayout_5.addLayout(self.verticalLayout_3)
         self.line_2 = QtWidgets.QFrame(self.verticalLayoutWidget_10)
@@ -63,13 +62,13 @@ class Ui_MainWindow(object):
         self.verticalLayout_4 = QtWidgets.QVBoxLayout()
         self.verticalLayout_4.setObjectName("verticalLayout_4")
         self.pushButton_5 = QtWidgets.QPushButton(self.verticalLayoutWidget_10)
-        self.pushButton_5.setObjectName("pushButton_5")
         self.pushButton_5.setCheckable(True)
         self.pushButton_5.setChecked(True)
+        self.pushButton_5.setObjectName("pushButton_5")
         self.verticalLayout_4.addWidget(self.pushButton_5)
         self.pushButton_6 = QtWidgets.QPushButton(self.verticalLayoutWidget_10)
-        self.pushButton_6.setObjectName("pushButton_6")
         self.pushButton_6.setCheckable(True)
+        self.pushButton_6.setObjectName("pushButton_6")
         self.verticalLayout_4.addWidget(self.pushButton_6)
         self.verticalLayout_5.addLayout(self.verticalLayout_4)
         self.verticalLayout.addLayout(self.verticalLayout_5)
@@ -98,6 +97,12 @@ class Ui_MainWindow(object):
         self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
         self.doubleSpinBox_4 = QtWidgets.QDoubleSpinBox(self.verticalLayoutWidget_10)
+        self.doubleSpinBox_4.setSuffix("")
+        self.doubleSpinBox_4.setMinimum(-100000.0)
+        self.doubleSpinBox_4.setMaximum(100000.0)
+        self.doubleSpinBox_4.setSingleStep(10.0)
+        self.doubleSpinBox_4.setStepType(QtWidgets.QAbstractSpinBox.AdaptiveDecimalStepType)
+        self.doubleSpinBox_4.setProperty("value", 10000.0)
         self.doubleSpinBox_4.setObjectName("doubleSpinBox_4")
         self.horizontalLayout_3.addWidget(self.doubleSpinBox_4)
         self.pushButton_4 = QtWidgets.QPushButton(self.verticalLayoutWidget_10)
@@ -118,6 +123,11 @@ class Ui_MainWindow(object):
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         self.doubleSpinBox_3 = QtWidgets.QDoubleSpinBox(self.verticalLayoutWidget_10)
+        self.doubleSpinBox_3.setMinimum(-100000.0)
+        self.doubleSpinBox_3.setMaximum(100000.0)
+        self.doubleSpinBox_3.setSingleStep(10.0)
+        self.doubleSpinBox_3.setStepType(QtWidgets.QAbstractSpinBox.AdaptiveDecimalStepType)
+        self.doubleSpinBox_3.setProperty("value", 10000.0)
         self.doubleSpinBox_3.setObjectName("doubleSpinBox_3")
         self.horizontalLayout_2.addWidget(self.doubleSpinBox_3)
         self.pushButton_3 = QtWidgets.QPushButton(self.verticalLayoutWidget_10)
@@ -138,6 +148,7 @@ class Ui_MainWindow(object):
         self.label_5.setObjectName("label_5")
         self.verticalLayout_9.addWidget(self.label_5)
         self.textEdit = QtWidgets.QTextEdit(self.verticalLayoutWidget_10)
+        self.textEdit.setReadOnly(True)
         self.textEdit.setObjectName("textEdit")
         self.verticalLayout_9.addWidget(self.textEdit)
         self.line_4 = QtWidgets.QFrame(self.verticalLayoutWidget_10)
@@ -149,6 +160,7 @@ class Ui_MainWindow(object):
         self.label_6.setObjectName("label_6")
         self.verticalLayout_9.addWidget(self.label_6)
         self.textEdit_2 = QtWidgets.QTextEdit(self.verticalLayoutWidget_10)
+        self.textEdit_2.setReadOnly(True)
         self.textEdit_2.setObjectName("textEdit_2")
         self.verticalLayout_9.addWidget(self.textEdit_2)
         self.horizontalLayout.addLayout(self.verticalLayout_9)
@@ -174,6 +186,7 @@ class Ui_MainWindow(object):
         spacerItem4 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.horizontalLayout_4.addItem(spacerItem4)
         self.textEdit_3 = QtWidgets.QTextEdit(self.verticalLayoutWidget_10)
+        self.textEdit_3.setReadOnly(True)
         self.textEdit_3.setObjectName("textEdit_3")
         self.horizontalLayout_4.addWidget(self.textEdit_3)
         self.verticalLayout_11.addLayout(self.horizontalLayout_4)
@@ -219,51 +232,3 @@ class Ui_MainWindow(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab0), _translate("MainWindow", "命令"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab1), _translate("MainWindow", "命令集"))
         self.menuFile.setTitle(_translate("MainWindow", "File"))
-
-
-class gui:
-    def __init__(self, monitor, ser):
-        self.monitor = monitor
-        self.ser = ser
-        app = QtWidgets.QApplication(sys.argv)
-        MainWindow = QtWidgets.QMainWindow()
-        self.ui = Ui_MainWindow()
-        self.ui.setupUi(MainWindow)
-        self.ui.pushButton.clicked.connect(self.clicked_pushbutton)
-        self.ui.pushButton_2.clicked.connect(self.clicked_pushbutton_2)
-        self.ui.pushButton_5.clicked.connect(self.clicked_pushbutton_5)
-        self.ui.pushButton_6.clicked.connect(self.clicked_pushbutton_6)
-        self.ui.pushButton_4.clicked.connect(self.clicked_pushbutton_4)
-        self.ui.pushButton_3.clicked.connect(self.clicked_pushbutton_3)
-        MainWindow.show()
-        sys.exit(app.exec_())
-
-    def clicked_pushbutton(self):
-        self.monitor.x_axis[0] = 0
-        self.ui.pushButton.setChecked(True)
-        self.ui.pushButton_2.setChecked(False)
-
-    def clicked_pushbutton_2(self):
-        self.monitor.x_axis[0] = 1
-        self.ui.pushButton_2.setChecked(True)
-        self.ui.pushButton.setChecked(False)
-
-    def clicked_pushbutton_5(self):
-        self.monitor.y_axis[0] = 1
-        self.ui.pushButton_5.setChecked(True)
-        self.ui.pushButton_6.setChecked(False)
-
-    def clicked_pushbutton_6(self):
-        self.monitor.y_axis[0] = 0
-        self.ui.pushButton_6.setChecked(True)
-        self.ui.pushButton_5.setChecked(False)
-
-    def clicked_pushbutton_4(self):
-        self.monitor.del_move()
-
-    def clicked_pushbutton_3(self):
-        self.monitor.del_move()
-
-
-if __name__ == "__main__":
-    gui = gui()
