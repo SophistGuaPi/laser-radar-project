@@ -125,9 +125,9 @@ class Ui_MainWindow(object):
         self.doubleSpinBox_3 = QtWidgets.QDoubleSpinBox(self.verticalLayoutWidget_10)
         self.doubleSpinBox_3.setMinimum(-100000.0)
         self.doubleSpinBox_3.setMaximum(100000.0)
-        self.doubleSpinBox_3.setSingleStep(10.0)
+        self.doubleSpinBox_3.setSingleStep(1.0)
         self.doubleSpinBox_3.setStepType(QtWidgets.QAbstractSpinBox.AdaptiveDecimalStepType)
-        self.doubleSpinBox_3.setProperty("value", 10000.0)
+        self.doubleSpinBox_3.setProperty("value", 50.0)
         self.doubleSpinBox_3.setObjectName("doubleSpinBox_3")
         self.horizontalLayout_2.addWidget(self.doubleSpinBox_3)
         self.pushButton_3 = QtWidgets.QPushButton(self.verticalLayoutWidget_10)
@@ -232,3 +232,13 @@ class Ui_MainWindow(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab0), _translate("MainWindow", "命令"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab1), _translate("MainWindow", "命令集"))
         self.menuFile.setTitle(_translate("MainWindow", "File"))
+
+
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    MainWindow = QtWidgets.QMainWindow()
+    ui = Ui_MainWindow()
+    ui.setupUi(MainWindow)
+    MainWindow.show()
+    sys.exit(app.exec_())
