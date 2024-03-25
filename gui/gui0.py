@@ -102,7 +102,7 @@ class Ui_MainWindow(object):
         self.doubleSpinBox_4.setMaximum(100000.0)
         self.doubleSpinBox_4.setSingleStep(10.0)
         self.doubleSpinBox_4.setStepType(QtWidgets.QAbstractSpinBox.AdaptiveDecimalStepType)
-        self.doubleSpinBox_4.setProperty("value", 10000.0)
+        self.doubleSpinBox_4.setProperty("value", 1000.0)
         self.doubleSpinBox_4.setObjectName("doubleSpinBox_4")
         self.horizontalLayout_3.addWidget(self.doubleSpinBox_4)
         self.pushButton_4 = QtWidgets.QPushButton(self.verticalLayoutWidget_10)
@@ -151,6 +151,10 @@ class Ui_MainWindow(object):
         self.textEdit.setReadOnly(True)
         self.textEdit.setObjectName("textEdit")
         self.verticalLayout_9.addWidget(self.textEdit)
+        self.textEdit_2 = QtWidgets.QTextEdit(self.verticalLayoutWidget_10)
+        self.textEdit_2.setReadOnly(True)
+        self.textEdit_2.setObjectName("textEdit_2")
+        self.verticalLayout_9.addWidget(self.textEdit_2)
         self.line_4 = QtWidgets.QFrame(self.verticalLayoutWidget_10)
         self.line_4.setFrameShape(QtWidgets.QFrame.HLine)
         self.line_4.setFrameShadow(QtWidgets.QFrame.Sunken)
@@ -159,10 +163,6 @@ class Ui_MainWindow(object):
         self.label_6 = QtWidgets.QLabel(self.verticalLayoutWidget_10)
         self.label_6.setObjectName("label_6")
         self.verticalLayout_9.addWidget(self.label_6)
-        self.textEdit_2 = QtWidgets.QTextEdit(self.verticalLayoutWidget_10)
-        self.textEdit_2.setReadOnly(True)
-        self.textEdit_2.setObjectName("textEdit_2")
-        self.verticalLayout_9.addWidget(self.textEdit_2)
         self.horizontalLayout.addLayout(self.verticalLayout_9)
         self.verticalLayout_10.addLayout(self.horizontalLayout)
         self.line_6 = QtWidgets.QFrame(self.verticalLayoutWidget_10)
@@ -179,6 +179,11 @@ class Ui_MainWindow(object):
         self.horizontalLayout_4.setObjectName("horizontalLayout_4")
         self.horizontalLayout_5 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_5.setObjectName("horizontalLayout_5")
+        self.pushButton_8 = QtWidgets.QPushButton(self.verticalLayoutWidget_10)
+        self.pushButton_8.setCheckable(True)
+        self.pushButton_8.setChecked(False)
+        self.pushButton_8.setObjectName("pushButton_8")
+        self.horizontalLayout_5.addWidget(self.pushButton_8)
         self.pushButton_7 = QtWidgets.QPushButton(self.verticalLayoutWidget_10)
         self.pushButton_7.setObjectName("pushButton_7")
         self.horizontalLayout_5.addWidget(self.pushButton_7)
@@ -226,11 +231,22 @@ class Ui_MainWindow(object):
         self.label_4.setText(_translate("MainWindow", "Y轴运动"))
         self.pushButton_3.setText(_translate("MainWindow", "运行"))
         self.label_5.setText(_translate("MainWindow", "X轴位移"))
+        self.textEdit.setHtml(_translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:\'Sans Serif\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">0</p></body></html>"))
+        self.textEdit_2.setHtml(_translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:\'Sans Serif\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">0</p></body></html>"))
         self.label_6.setText(_translate("MainWindow", "Y轴位移"))
         self.label_7.setText(_translate("MainWindow", "激光测距"))
+        self.pushButton_8.setText(_translate("MainWindow", "监听串口"))
         self.pushButton_7.setText(_translate("MainWindow", "单次采样"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab0), _translate("MainWindow", "命令"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab1), _translate("MainWindow", "命令集"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab0), _translate("MainWindow", "指令"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab1), _translate("MainWindow", "任务"))
         self.menuFile.setTitle(_translate("MainWindow", "File"))
 
 

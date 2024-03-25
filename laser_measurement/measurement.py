@@ -7,9 +7,12 @@
 import serial
 import threading
 import time
+from PyQt5 import QtCore, QtGui, QtWidgets
 
-class measure:
+class measure(QtCore.QObject):
+    new_measure = QtCore.pyqtSignal()
     def __init__(self, port):
+        super().__init__()
         self.mode = "singgel"
         baudrate = 115200  # 波特率
         timeout = 1  # 超时时间（秒）
@@ -17,6 +20,7 @@ class measure:
         stopbits = serial.STOPBITS_ONE  # 停止位
         self.ser = serial.Serial(port, baudrate, bytesize, stopbits=stopbits, timeout=timeout)
         self.data = None
+        self.thread = None
 
 
         # 异步读取数据的线程函数
@@ -25,8 +29,8 @@ class measure:
             while True:
                 data = self.ser.readline()
                 if data:
-                    self.data = data
-                    print(self.data.decode('utf-8'))
+                    self.data = data.decode('utf-8')
+                    print(self.data)
                     break
 
         # 创建并运行线程
@@ -41,6 +45,13 @@ class measure:
         finally:
             self.thread.join()
 
+    def read(self):
+        while True:
+            data = self.ser.readline()
+            if data:
+                self.data = data.decode('utf-8')
+                self.new_measure.emit()
+                break
 
     def init_write(self, samp_rate):
         self.ser.write((f"iSET:7,{samp_rate}\r\n").encode())
