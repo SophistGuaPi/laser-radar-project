@@ -83,20 +83,26 @@ class gui:
         self.ui.textEdit_2.setText(str(self.monitor.Pos_y.value))
 
     def clicked_pushbutton_8(self):
+        def a():
+            while 1:
+                self.ser.read()
+                time.sleep(0.01)
+
         if self.ui.pushButton_8.isChecked():
-            self.ser.thead = threading.Thread(target=self.ser.read)
-            self.ser.thead.start()
-        elif self.ser.thead.is_alive():
+            self.t0 = threading.Thread(target=a, daemon=True)
+            self.t0.start()
+        elif self.t0.is_alive():
             self.ui.pushButton_8.setChecked(True)
 
     def clicked_pushbutton_7(self):
         try:
             # 主线程中异步写入数据
-            self.ser.thead.join()
+            self.ser.write_serial()
         except KeyboardInterrupt:
             print("Serial Communication Stopped.")
         finally:
-            self.ser.thead.join()
+            pass
+            # self.ser.thead.join()
 
     def show_measure(self):
         self.ui.textEdit_3.setText(self.ser.data)
