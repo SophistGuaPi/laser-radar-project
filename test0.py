@@ -23,7 +23,8 @@ if __name__ == "__main__":
 
     # 初始化激光器
     ser.init_write(20)
-    ser.mode = "singgel"
+    ser.mode = "single"
+    
 
     # 启动GUI
     gui = gui.gui(monitor, ser)

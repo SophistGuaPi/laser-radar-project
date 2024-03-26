@@ -13,7 +13,7 @@ class measure(QtCore.QObject):
     new_measure = QtCore.pyqtSignal()
     def __init__(self, port):
         super().__init__()
-        self.mode = "singgel"
+        self.mode = "single"
         baudrate = 115200  # 波特率
         timeout = 1  # 超时时间（秒）
         bytesize = serial.EIGHTBITS  # 数据位
@@ -58,15 +58,19 @@ class measure(QtCore.QObject):
         print(self.ser.readline().decode('utf-8'))
 
     def write_serial(self):
-        if self.mode == "singgel":
+        if self.mode == "single":
             self.ser.write(f"iSM\r\n".encode())
         if self.mode == "auto":
             self.ser.write(f"iACM\r\n".encode())
         if self.mode == "fast auto":
             self.ser.write(f"iFACM\r\n".encode())
+        if self.mode == "open":
+            self.ser.write(f"iLD:1\r\n".encode())
+        if self.mode == "close":
+            self.ser.write(f"iLD:0\r\n".encode())
+
 
     def stop_serial(self):
-
         if self.ser.is_open:
             self.ser.write((f"iHALT\r\n").encode())
             self.ser.close()
