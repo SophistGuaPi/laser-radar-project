@@ -21,6 +21,7 @@ class measure(QtCore.QObject):
         self.ser = serial.Serial(port, baudrate, bytesize, stopbits=stopbits, timeout=timeout)
         self.data = None
         self.thread = None
+        self.frequent = 20
 
 
         # 异步读取数据的线程函数
@@ -30,7 +31,6 @@ class measure(QtCore.QObject):
                 data = self.ser.readline()
                 if data:
                     self.data = data.decode('utf-8')
-                    print(self.data)
                     break
 
         # 创建并运行线程
