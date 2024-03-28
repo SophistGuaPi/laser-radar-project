@@ -22,6 +22,7 @@ class measure(QtCore.QObject):
         self.data = None
         self.thread = None
         self.frequent = 20
+        self.times = 2
 
 
         # 异步读取数据的线程函数
@@ -31,6 +32,7 @@ class measure(QtCore.QObject):
                 data = self.ser.readline()
                 if data:
                     self.data = data.decode('utf-8')
+                    self.new_measure.emit()
                     break
 
         # 创建并运行线程
@@ -53,8 +55,8 @@ class measure(QtCore.QObject):
                 self.new_measure.emit()
                 break
 
-    def init_write(self, samp_rate):
-        self.ser.write((f"iSET:7,{samp_rate}\r\n").encode())
+    def init_write(self):
+        self.ser.write((f"iSET:7,{self.frequent}\r\n").encode())
         print(self.ser.readline().decode('utf-8'))
 
     def write_serial(self):
@@ -69,6 +71,8 @@ class measure(QtCore.QObject):
         if self.mode == "close":
             self.ser.write(f"iLD:0\r\n".encode())
 
+    def stop_auto(self):
+        self.ser.write((f"iHALT\r\n").encode())
 
     def stop_serial(self):
         if self.ser.is_open:

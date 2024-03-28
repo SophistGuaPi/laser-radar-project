@@ -11,6 +11,8 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class monitor(QtCore.QObject):
     pos_change_x = QtCore.pyqtSignal()
     pos_change_y = QtCore.pyqtSignal()
+    monitor_stop_x = QtCore.pyqtSignal()
+    monitor_stop_y = QtCore.pyqtSignal()
 
     def __init__(self):
         super().__init__()
@@ -98,7 +100,10 @@ class monitor(QtCore.QObject):
             # 打印X轴的逻辑位置
             erro = self.DAQdll.Read_Position_2XE(0, 0, byref(self.Pos_x), byref(self.RunState_x), byref(self.IOState_x),
                                                  byref(self.CEMG_x))
+            time.sleep(0.1)
             self.pos_change_x.emit()
+        self.monitor_stop_x.emit()
+
 
     def get_position_y(self):
         # 读取X轴状态
@@ -108,7 +113,21 @@ class monitor(QtCore.QObject):
             # 打印X轴的逻辑位置
             erro = self.DAQdll.Read_Position_2XE(0, 1, byref(self.Pos_y), byref(self.RunState_y), byref(self.IOState_y),
                                                  byref(self.CEMG_y))
+            time.sleep(0.1)
             self.pos_change_y.emit()
+        self.monitor_stop_y.emit()
+
+    def get_a_position_x(self):
+        # 读取X轴状态
+        erro = self.DAQdll.Read_Position_2XE(0, 0, byref(self.Pos_x), byref(self.RunState_x), byref(self.IOState_x),
+                                             byref(self.CEMG_x))
+        self.monitor_stop_x.emit()
+
+    def get_a_position_y(self):
+        # 读取X轴状态
+        erro = self.DAQdll.Read_Position_2XE(0, 1, byref(self.Pos_y), byref(self.RunState_y), byref(self.IOState_y),
+                                             byref(self.CEMG_y))
+        self.monitor_stop_y.emit()
 
 
 if __name__ == "__main__":

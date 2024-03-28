@@ -14,7 +14,8 @@ class task:
     def __init__(self, monitor, ser):
         self.monitor = monitor
         self.ser = ser
-        self.data = []
+        self.datalst = []
+        self.stop_x = False
 
     def scan_line_x(self):
         def mov():
@@ -22,16 +23,31 @@ class task:
             self.monitor.del_move_x()
 
         def measure():
-            while 1:
-                self.ser.read_serial()
-                time.sleep(self.ser.frequent)
-                print(self.ser.data)
+            def read():
+                self.stop_x = True
+                while self.stop_x:
+                    self.ser.read()
 
-        t0 = threading.Thread(target=mov, daemon=True)
-        t1 = threading.Thread(target=measure, daemon=True)
-        t0.start()
+            self.ser.mode = "fast auto"
+            try:
+                self.ser.write_serial()
+            except KeyboardInterrupt:
+                print("Serial Communication Stopped.")
+
+            self.stop_x = True
+            t0 = threading.Thread(target=read, daemon=True)
+            t0.start()
+
+        def stop():
+            self.stop_x = False
+            self.ser.stop_auto()
+
+        self.monitor.monitor_stop_x.connect(stop)
+
+        t1 = threading.Thread(target=mov, daemon=True)
+        t2 = threading.Thread(target=measure, daemon=True)
         t1.start()
-        t1.join()
+        t2.start()
 
 
 

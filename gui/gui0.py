@@ -14,12 +14,12 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(839, 683)
+        MainWindow.resize(766, 652)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.centralwidget.setObjectName("centralwidget")
         self.tabWidget = QtWidgets.QTabWidget(self.centralwidget)
-        self.tabWidget.setGeometry(QtCore.QRect(0, 10, 771, 611))
+        self.tabWidget.setGeometry(QtCore.QRect(0, 0, 771, 611))
         self.tabWidget.setObjectName("tabWidget")
         self.tab0 = QtWidgets.QWidget()
         self.tab0.setObjectName("tab0")
@@ -527,7 +527,7 @@ class Ui_MainWindow(object):
         self.tabWidget.addTab(self.tab1, "")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 839, 23))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 766, 23))
         self.menubar.setObjectName("menubar")
         self.menuFile = QtWidgets.QMenu(self.menubar)
         self.menuFile.setObjectName("menuFile")

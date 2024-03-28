@@ -22,7 +22,7 @@ if __name__ == "__main__":
     monitor = monitor.monitor()
 
     # 初始化激光器
-    ser.init_write(20)
+    ser.init_write()
     ser.mode = "single"
     
 

@@ -10,6 +10,8 @@ import sys
 import threading
 import gui.gui0 as gui0
 import task.task as task
+import pandas as pd
+import numpy as np
 
 
 class gui:
@@ -18,7 +20,7 @@ class gui:
         self.ser = ser
         self.task = task.task(monitor, ser)
 
-        self.dataset = []
+        self.datalst = []
 
         app = QtWidgets.QApplication(sys.argv)
         MainWindow = QtWidgets.QMainWindow()
@@ -41,18 +43,18 @@ class gui:
         self.ui.pushButton_12.clicked.connect(self.clicked_pushbutton_12)
         self.ui.pushButton_17.clicked.connect(self.clicked_pushbutton_17)
         self.ui.pushButton_18.clicked.connect(self.clicked_pushbutton_18)
-        self.ui.doubleSpinBox_4.valueChanged.connect(self.value_change_spinbox_4)
-        self.ui.doubleSpinBox_3.valueChanged.connect(self.value_change_spinbox_3)
-        self.ui.doubleSpinBox_7.valueChanged.connect(self.value_change_spinbox_7)
-        self.ui.doubleSpinBox_8.valueChanged.connect(self.value_change_spinbox_8)
-        self.ui.doubleSpinBox_13.valueChanged.connect(self.value_change_spinbox_13)
-        self.ui.doubleSpinBox_14.valueChanged.connect(self.value_change_spinbox_14)
-        self.ui.doubleSpinBox_11.valueChanged.connect(self.value_change_spinbox_11)
-        self.ui.doubleSpinBox_15.valueChanged.connect(self.value_change_spinbox_15)
-        self.ui.doubleSpinBox_12.valueChanged.connect(self.value_change_spinbox_12)
-        self.ui.doubleSpinBox_20.valueChanged.connect(self.value_change_spinbox_20)
-        self.ui.spinBox_16.valueChanged.connect(self.value_change_spinbox_16)
-        self.ui.spinBox_18.valueChanged.connect(self.value_change_spinbox_18)
+        self.ui.doubleSpinBox_4.editingFinished.connect(self.value_change_spinbox_4)
+        self.ui.doubleSpinBox_3.editingFinished.connect(self.value_change_spinbox_3)
+        self.ui.doubleSpinBox_7.editingFinished.connect(self.value_change_spinbox_7)
+        self.ui.doubleSpinBox_8.editingFinished.connect(self.value_change_spinbox_8)
+        self.ui.doubleSpinBox_13.editingFinished.connect(self.value_change_spinbox_13)
+        self.ui.doubleSpinBox_14.editingFinished.connect(self.value_change_spinbox_14)
+        self.ui.doubleSpinBox_11.editingFinished.connect(self.value_change_spinbox_11)
+        self.ui.doubleSpinBox_15.editingFinished.connect(self.value_change_spinbox_15)
+        self.ui.doubleSpinBox_12.editingFinished.connect(self.value_change_spinbox_12)
+        self.ui.doubleSpinBox_20.editingFinished.connect(self.value_change_spinbox_20)
+        self.ui.spinBox_16.editingFinished.connect(self.value_change_spinbox_16)
+        self.ui.spinBox_18.editingFinished.connect(self.value_change_spinbox_18)
         self.monitor.pos_change_x.connect(self.show_pos_x)
         self.monitor.pos_change_y.connect(self.show_pos_y)
         self.ui.pushButton_8.clicked.connect(self.clicked_pushbutton_8)
@@ -85,30 +87,66 @@ class gui:
         self.ui.pushButton_5.setChecked(False)
 
     def clicked_pushbutton_4(self):
-        self.monitor.del_move_x()
-        self.monitor.get_position_x()
+        def a():
+            self.monitor.del_move_x()
+            self.monitor.get_position_x()
+
+        t = threading.Thread(target=a, daemon=True)
+        t.start()
 
     def clicked_pushbutton_3(self):
-        self.monitor.del_move_y()
-        self.monitor.get_position_y()
+        def a():
+            self.monitor.del_move_y()
+            self.monitor.get_position_y()
+
+        t = threading.Thread(target=a, daemon=True)
+        t.start()
 
     def clicked_pushbutton_9(self):
         self.monitor.init_axis()
 
     def clicked_pushbutton_14(self):
-        self.monitor.move_origen()
+        def a():
+            self.monitor.move_origen()
+
+        t = threading.Thread(target=a, daemon=True)
+        t.start()
 
     def clicked_pushbutton_12(self):
         self.monitor.init_axis()
 
     def clicked_pushbutton_17(self):
-        self.task.scan_line_x()
+        def a():
+            self.task.scan_line_x()
+
+            self.monitor.get_position_x()
+            self.monitor.get_position_y()
+
+        t = threading.Thread(target=a, daemon=True)
+        t.start()
 
     def clicked_pushbutton_18(self):
-        self.monitor.init_axis()
+        data = [None]*len(self.datalst)
+        for i in range(len(data)):
+            if self.ser.data[i][0] == "E":
+                data[i] = None
+            else:
+                print(data[i])
+                data[i] = self.datalst[i][2:7]
+                print(data[i])
+
+        x = np.linspace(self.monitor.range_x_min, self.monitor.range_x_max, len(data))
+        df = pd.DataFrame()
+        df["angel"] = x
+        df["distance"] = data
+        print(df)
 
     def clicked_pushbutton_15(self):
-        self.monitor.move_origen()
+        def a():
+            self.monitor.move_origen()
+
+        t = threading.Thread(target=a, daemon=True)
+        t.start()
 
     def value_change_spinbox_4(self):
         self.monitor.x_axis[4] = int(self.ui.doubleSpinBox_4.value() * 1000)
@@ -127,34 +165,46 @@ class gui:
     def value_change_spinbox_12(self):
         self.monitor.x_axis[3] = int(self.ui.doubleSpinBox_12.value() * 1000)
         self.ui.doubleSpinBox_7.setValue(self.ui.doubleSpinBox_12.value())
-        self.ui.spinBox_16.setValue(int((self.monitor.range_x_max-self.monitor.range_x_min)*self.ser.frequent*1000 / self.monitor.x_axis[3]))
+        self.ui.spinBox_16.setValue(
+            int((self.monitor.range_x_max - self.monitor.range_x_min) * self.ser.frequent * 1000 / self.monitor.x_axis[
+                3]))
+        self.ser.times = self.ui.spinBox_16.value()
 
     def value_change_spinbox_20(self):
         self.monitor.y_axis[3] = int(self.ui.doubleSpinBox_20.value() * (1000 / 0.714286))
         self.ui.doubleSpinBox_8.setValue(self.ui.doubleSpinBox_20.value())
-        self.ui.spinBox_18.setValue(int((self.monitor.range_y_max - self.monitor.range_y_min) * self.ser.frequent*1000 / (self.monitor.y_axis[3]/0.714286)))
+        self.ui.spinBox_18.setValue(
+            int((self.monitor.range_y_max - self.monitor.range_y_min) * self.ser.frequent * 1000 / (
+                        self.monitor.y_axis[3] / 0.714286)))
+        self.ser.times = self.ui.spinBox_16.value()
 
     def value_change_spinbox_13(self):
         self.monitor.range_x_min = self.ui.doubleSpinBox_13.value()
         self.ui.spinBox_16.setValue(
             int((self.monitor.range_x_max - self.monitor.range_x_min) * self.ser.frequent * 1000 / self.monitor.x_axis[
                 3]))
+        self.ser.times = self.ui.spinBox_16.value()
 
     def value_change_spinbox_14(self):
         self.monitor.range_x_max = self.ui.doubleSpinBox_14.value()
         self.ui.spinBox_16.setValue(
             int((self.monitor.range_x_max - self.monitor.range_x_min) * self.ser.frequent * 1000 / self.monitor.x_axis[
                 3]))
+        self.ser.times = self.ui.spinBox_16.value()
 
     def value_change_spinbox_11(self):
         self.monitor.range_y_min = self.ui.doubleSpinBox_11.value()
         self.ui.spinBox_18.setValue(
             int((self.monitor.range_y_max - self.monitor.range_y_min) * self.ser.frequent * 1000 / (
-                        self.monitor.y_axis[3] / 0.714286)))
+                    self.monitor.y_axis[3] / 0.714286)))
+        self.ser.times = self.ui.spinBox_16.value()
 
     def value_change_spinbox_15(self):
         self.monitor.range_y_max = self.ui.doubleSpinBox_15.value()
-        self.ui.spinBox_18.setValue(int((self.monitor.range_y_max - self.monitor.range_y_min) * self.ser.frequent*1000 / (self.monitor.y_axis[3]/0.714286)))
+        self.ui.spinBox_18.setValue(
+            int((self.monitor.range_y_max - self.monitor.range_y_min) * self.ser.frequent * 1000 / (
+                        self.monitor.y_axis[3] / 0.714286)))
+        self.ser.times = self.ui.spinBox_16.value()
 
     def value_change_spinbox_16(self):
         pass
@@ -194,27 +244,36 @@ class gui:
 
     def show_measure(self):
         self.ui.textEdit_3.setText(self.ser.data)
+        self.datalst.append(self.ser.data)
 
     def combobox_change(self):
-        if self.ui.comboBox.currentText() == "单次采样":
-            self.ser.mode = "single"
-            self.ser.write_serial()
-        elif self.ui.comboBox.currentText() == "自动采样":
-            self.ser.mode = "auto"
-            self.ser.write_serial()
-        elif self.ui.comboBox.currentText() == "激光常开":
-            self.ser.mode = "open"
-            self.ser.write_serial()
-        elif self.ui.comboBox.currentText() == "激光常闭":
-            self.ser.mode = "close"
-            self.ser.write_serial()
+        def a():
+            if self.ui.comboBox.currentText() == "单次采样":
+                self.ser.mode = "single"
+                self.ser.write_serial()
+            elif self.ui.comboBox.currentText() == "自动采样":
+                self.ser.mode = "auto"
+                self.ser.write_serial()
+            elif self.ui.comboBox.currentText() == "激光常开":
+                self.ser.mode = "open"
+                self.ser.write_serial()
+            elif self.ui.comboBox.currentText() == "激光常闭":
+                self.ser.mode = "close"
+                self.ser.write_serial()
+
+        t = threading.Thread(target=a, daemon=True)
+        t.start()
 
     def combobox_change_2(self):
         self.ser.frequent = int(self.ui.comboBox_2.currentText())
-        self.ui.spinBox_16.setValue(int((self.monitor.range_x_max-self.monitor.range_x_min)*self.ser.frequent*1000 / self.monitor.x_axis[3]))
+        self.ser.init_write()
+        self.ui.spinBox_16.setValue(
+            int((self.monitor.range_x_max - self.monitor.range_x_min) * self.ser.frequent * 1000 / self.monitor.x_axis[
+                3]))
         self.ui.spinBox_18.setValue(
             int((self.monitor.range_y_max - self.monitor.range_y_min) * self.ser.frequent * 1000 / (
-                        self.monitor.y_axis[3] / 0.714286)))
+                    self.monitor.y_axis[3] / 0.714286)))
+        self.ser.times = self.ui.spinBox_16.value()
 
 
 # class CircularSequenceQueue(object):
