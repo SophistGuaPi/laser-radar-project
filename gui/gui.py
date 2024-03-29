@@ -116,8 +116,14 @@ class gui:
         self.monitor.init_axis()
 
     def clicked_pushbutton_17(self):
+        self.datalst = []
         def a():
-            self.task.scan_line_x()
+            if self.ui.comboBox_3.currentText() == "扫描x":
+                self.task.scan_line_x()
+            elif self.ui.comboBox_3.currentText() == "扫描y":
+                self.task.scan_line_y()
+            elif self.ui.comboBox_3.currentText() == "场扫描":
+                self.task.field_scan()
 
             self.monitor.get_position_x()
             self.monitor.get_position_y()
@@ -126,20 +132,18 @@ class gui:
         t.start()
 
     def clicked_pushbutton_18(self):
-        data = [None]*len(self.datalst)
+        data = [None] * len(self.datalst)
         for i in range(len(data)):
-            if self.ser.data[i][0] == "E":
+            if self.datalst[i][0] == "E":
                 data[i] = None
             else:
-                print(data[i])
                 data[i] = self.datalst[i][2:7]
-                print(data[i])
-
         x = np.linspace(self.monitor.range_x_min, self.monitor.range_x_max, len(data))
         df = pd.DataFrame()
         df["angel"] = x
         df["distance"] = data
         print(df)
+        df.to_excel("./data/data0.xlsx")
 
     def clicked_pushbutton_15(self):
         def a():
@@ -175,7 +179,7 @@ class gui:
         self.ui.doubleSpinBox_8.setValue(self.ui.doubleSpinBox_20.value())
         self.ui.spinBox_18.setValue(
             int((self.monitor.range_y_max - self.monitor.range_y_min) * self.ser.frequent * 1000 / (
-                        self.monitor.y_axis[3] / 0.714286)))
+                    self.monitor.y_axis[3] / 0.714286)))
         self.ser.times = self.ui.spinBox_16.value()
 
     def value_change_spinbox_13(self):
@@ -203,7 +207,7 @@ class gui:
         self.monitor.range_y_max = self.ui.doubleSpinBox_15.value()
         self.ui.spinBox_18.setValue(
             int((self.monitor.range_y_max - self.monitor.range_y_min) * self.ser.frequent * 1000 / (
-                        self.monitor.y_axis[3] / 0.714286)))
+                    self.monitor.y_axis[3] / 0.714286)))
         self.ser.times = self.ui.spinBox_16.value()
 
     def value_change_spinbox_16(self):
@@ -244,6 +248,7 @@ class gui:
 
     def show_measure(self):
         self.ui.textEdit_3.setText(self.ser.data)
+        self.ui.lineEdit_2.setText(self.ser.data)
         self.datalst.append(self.ser.data)
 
     def combobox_change(self):

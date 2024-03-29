@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>766</width>
-    <height>652</height>
+    <width>858</width>
+    <height>741</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -30,7 +30,7 @@
      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;命令&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="tab0">
      <attribute name="title">
@@ -616,16 +616,46 @@ p, li { white-space: pre-wrap; }
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="pushButton_17">
-             <property name="text">
-              <string>开始采集</string>
-             </property>
-            </widget>
+            <layout class="QHBoxLayout" name="horizontalLayout_6">
+             <item>
+              <widget class="QComboBox" name="comboBox_3">
+               <item>
+                <property name="text">
+                 <string>扫描x</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>扫描y</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>扫描区域（场扫描）</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="pushButton_17">
+               <property name="text">
+                <string>开始采集</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
            <item>
             <widget class="QPushButton" name="pushButton_18">
              <property name="text">
               <string>输出数据</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="lineEdit_2">
+             <property name="readOnly">
+              <bool>true</bool>
              </property>
             </widget>
            </item>
@@ -1110,7 +1140,7 @@ p, li { white-space: pre-wrap; }
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>766</width>
+     <width>858</width>
      <height>23</height>
     </rect>
    </property>
