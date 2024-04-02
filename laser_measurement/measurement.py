@@ -22,7 +22,8 @@ class measure(QtCore.QObject):
         self.data = None
         self.thread = None
         self.frequent = 20
-        self.times = 2
+        self.times_x = 2
+        self.times_y = 3
 
 
         # 异步读取数据的线程函数

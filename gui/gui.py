@@ -20,7 +20,9 @@ class gui:
         self.ser = ser
         self.task = task.task(monitor, ser)
 
+        self.dfs = []
         self.datalst = []
+        self.datalst_3d = []
 
         app = QtWidgets.QApplication(sys.argv)
         MainWindow = QtWidgets.QMainWindow()
@@ -62,6 +64,7 @@ class gui:
         self.ser.new_measure.connect(self.show_measure)
         self.ui.comboBox.currentTextChanged.connect(self.combobox_change)
         self.ui.comboBox_2.currentTextChanged.connect(self.combobox_change_2)
+        self.task.complete_line_scan.connect(self.save_line_data)
 
         MainWindow.show()
         sys.exit(app.exec_())
@@ -122,7 +125,7 @@ class gui:
                 self.task.scan_line_x()
             elif self.ui.comboBox_3.currentText() == "扫描y":
                 self.task.scan_line_y()
-            elif self.ui.comboBox_3.currentText() == "场扫描":
+            elif self.ui.comboBox_3.currentText() == "扫描区域（场扫描）":
                 self.task.field_scan()
 
             self.monitor.get_position_x()
@@ -132,18 +135,30 @@ class gui:
         t.start()
 
     def clicked_pushbutton_18(self):
-        data = [None] * len(self.datalst)
-        for i in range(len(data)):
-            if self.datalst[i][0] == "E":
-                data[i] = None
-            else:
-                data[i] = self.datalst[i][2:7]
-        x = np.linspace(self.monitor.range_x_min, self.monitor.range_x_max, len(data))
-        df = pd.DataFrame()
-        df["angel"] = x
-        df["distance"] = data
-        print(df)
-        df.to_excel("./data/data0.xlsx")
+        if self.dfs:
+            # Create 3D array
+            data = np.array(self.dfs)
+            # Convert each 2D matrix into a Pandas DataFrame
+            dfs = [pd.DataFrame(x) for x in data]
+            # Create MultiIndex with 3 levels
+            indices = pd.MultiIndex.from_product([range(s) for s in data.shape])
+            # Concatenate all Pandas DataFrames into one large DataFrame
+            df_final = pd.concat(dfs, keys=indices)
+            print(df_final)
+            df_final.to_excel("./data/data0.xlsx")
+        else:
+            data = [None] * len(self.datalst)
+            for i in range(len(data)):
+                if self.datalst[i][0] == "E":
+                    data[i] = None
+                else:
+                    data[i] = self.datalst[i][2:7]
+            x = np.linspace(self.monitor.range_x_min, self.monitor.range_x_max, len(data))
+            df = pd.DataFrame()
+            df["angel"] = x
+            df["distance"] = data
+            print(df)
+            df.to_excel("./data/data0.xlsx")
 
     def clicked_pushbutton_15(self):
         def a():
@@ -172,7 +187,7 @@ class gui:
         self.ui.spinBox_16.setValue(
             int((self.monitor.range_x_max - self.monitor.range_x_min) * self.ser.frequent * 1000 / self.monitor.x_axis[
                 3]))
-        self.ser.times = self.ui.spinBox_16.value()
+        self.ser.times_x = self.ui.spinBox_16.value()
 
     def value_change_spinbox_20(self):
         self.monitor.y_axis[3] = int(self.ui.doubleSpinBox_20.value() * (1000 / 0.714286))
@@ -180,35 +195,35 @@ class gui:
         self.ui.spinBox_18.setValue(
             int((self.monitor.range_y_max - self.monitor.range_y_min) * self.ser.frequent * 1000 / (
                     self.monitor.y_axis[3] / 0.714286)))
-        self.ser.times = self.ui.spinBox_16.value()
+        self.ser.times_y = self.ui.spinBox_18.value()
 
     def value_change_spinbox_13(self):
         self.monitor.range_x_min = self.ui.doubleSpinBox_13.value()
         self.ui.spinBox_16.setValue(
             int((self.monitor.range_x_max - self.monitor.range_x_min) * self.ser.frequent * 1000 / self.monitor.x_axis[
                 3]))
-        self.ser.times = self.ui.spinBox_16.value()
+        self.ser.times_x = self.ui.spinBox_16.value()
 
     def value_change_spinbox_14(self):
         self.monitor.range_x_max = self.ui.doubleSpinBox_14.value()
         self.ui.spinBox_16.setValue(
             int((self.monitor.range_x_max - self.monitor.range_x_min) * self.ser.frequent * 1000 / self.monitor.x_axis[
                 3]))
-        self.ser.times = self.ui.spinBox_16.value()
+        self.ser.times_x = self.ui.spinBox_16.value()
 
     def value_change_spinbox_11(self):
         self.monitor.range_y_min = self.ui.doubleSpinBox_11.value()
         self.ui.spinBox_18.setValue(
             int((self.monitor.range_y_max - self.monitor.range_y_min) * self.ser.frequent * 1000 / (
                     self.monitor.y_axis[3] / 0.714286)))
-        self.ser.times = self.ui.spinBox_16.value()
+        self.ser.times_y = self.ui.spinBox_18.value()
 
     def value_change_spinbox_15(self):
         self.monitor.range_y_max = self.ui.doubleSpinBox_15.value()
         self.ui.spinBox_18.setValue(
             int((self.monitor.range_y_max - self.monitor.range_y_min) * self.ser.frequent * 1000 / (
                     self.monitor.y_axis[3] / 0.714286)))
-        self.ser.times = self.ui.spinBox_16.value()
+        self.ser.times_y = self.ui.spinBox_18.value()
 
     def value_change_spinbox_16(self):
         pass
@@ -278,8 +293,19 @@ class gui:
         self.ui.spinBox_18.setValue(
             int((self.monitor.range_y_max - self.monitor.range_y_min) * self.ser.frequent * 1000 / (
                     self.monitor.y_axis[3] / 0.714286)))
-        self.ser.times = self.ui.spinBox_16.value()
+        self.ser.times_x = self.ui.spinBox_16.value()
+        self.ser.times_y = self.ui.spinBox_18.value()
 
+    def save_line_data(self):
+        data = [None] * len(self.datalst)
+        for i in range(len(data)):
+            if self.datalst[i][0] == "E":
+                data[i] = None
+            else:
+                data[i] = self.datalst[i][2:7]
+        x = np.linspace(self.monitor.range_x_min, self.monitor.range_x_max, len(data))
+        lst = [data, x]
+        self.dfs.append(lst)
 
 # class CircularSequenceQueue(object):
 #     def __init__(self):
