@@ -19,6 +19,7 @@ class task(QtCore.QObject):
         self.monitor = monitor
         self.ser = ser
         self.datalst = []
+        self.data = []
         self.stop_x = False
         self.times_y = 0
         self.destination_x = 0
@@ -33,7 +34,7 @@ class task(QtCore.QObject):
             def read():
                 self.stop_x = True
                 while self.destination_x != self.monitor.Pos_x.value:
-                    self.ser.read()
+                    self.data.append(self.ser.read())
                 else:
                     self.ser.stop_auto()
 
@@ -123,9 +124,10 @@ class task(QtCore.QObject):
         speed = self.monitor.x_axis[3]
         for i in range(self.ser.times_y):
             scan()
+            # self.datalst.append(self.data)
             while self.destination_x != self.monitor.Pos_x.value:
                 time.sleep(0.01)
-            time.sleep(1)
+            time.sleep(1.2)
             next_row()
             time.sleep(0.2)
 

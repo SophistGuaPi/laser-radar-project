@@ -12,6 +12,8 @@ import gui.gui0 as gui0
 import task.task as task
 import pandas as pd
 import numpy as np
+from mpl_toolkits.mplot3d import Axes3D
+import matplotlib.pyplot as plt
 
 
 class gui:
@@ -135,24 +137,73 @@ class gui:
         t.start()
 
     def clicked_pushbutton_18(self):
-        if self.dfs:
-            # Create 3D array
-            data = np.array(self.dfs)
-            # Convert each 2D matrix into a Pandas DataFrame
-            dfs = [pd.DataFrame(x) for x in data]
-            # Create MultiIndex with 3 levels
-            indices = pd.MultiIndex.from_product([range(s) for s in data.shape])
-            # Concatenate all Pandas DataFrames into one large DataFrame
-            df_final = pd.concat(dfs, keys=indices)
-            print(df_final)
-            df_final.to_excel("./data/data0.xlsx")
+        if self.ui.comboBox_3.currentText() == "扫描区域（场扫描）":
+            def plt_mat(lst):
+                max_datalen = len(max(lst[0], key=len))
+                for i in range(len(lst)):
+                    lst_len = len(lst[i][0])
+                    supplement_len = max_datalen - lst_len
+                    if supplement_len:
+                        split_len = int(lst_len / (supplement_len + 1))
+                        for j in range(supplement_len):
+                            lst[i][0].insert(split_len * (j + 1), 0)
+                            lst[i][1].insert(split_len * (j + 1), 0)
+
+                data = np.array(lst)
+                # Convert each 2D matrix into a Pandas DataFrame
+                dfs = [pd.DataFrame(x) for x in data]
+                # Create MultiIndex with 3 levels
+                indices = pd.MultiIndex.from_product([range(s) for s in data.shape])
+                # Concatenate all Pandas DataFrames into one large DataFrame
+                df_final = pd.concat(dfs, keys=indices)
+
+                fig = plt.figure()
+                X = np.array([lst[i][0] for i in range(len(lst))])
+                y = np.linspace(0, 1, len(lst))
+                _, Y = np.meshgrid(X[0], y)
+                # lst = np.array([lst[i][1] for i in range(len(lst))])
+                lst = np.array([lst[i][1] for i in range(len(lst))])
+                ax = fig.add_subplot(1, 1, 1, projection="3d")
+                ax.plot_wireframe(X, Y, lst, rcount=15, ccount=15)
+                plt.show()
+            def extract_data():
+                def reshape_data(data):  # 将数据按照停止位重塑为二维
+                    datalst = [[]]
+                    data_len = len(data)
+                    line_num = 0
+                    for i in range(data_len):
+                        if data:
+                            a = data.pop(0)
+                            # print(a,line_num)
+                            datalst[line_num].append(a)
+                            if a == 'OK\r\n' and data[1][0] == "D":
+                                line_num += 1
+                                datalst.append([])
+                    return datalst
+                datalst = []
+                reshape_data = reshape_data(self.task.data)
+                for j in range(len(reshape_data)):
+                    data = [None] * len(reshape_data[j])
+                    for i in range(len(data)):
+                        if reshape_data[j][i][0] == "D":
+                            data[i] = float(reshape_data[j][i][2:7])
+                        else:
+                            data[i] = None
+                    data = list(filter(None, data))
+                    datalst.append([data, np.linspace(self.monitor.range_x_min, self.monitor.range_x_max, len(data))])
+                return datalst
+            # def
+            data = extract_data()
+
+
+
         else:
             data = [None] * len(self.datalst)
             for i in range(len(data)):
-                if self.datalst[i][0] == "E":
-                    data[i] = None
-                else:
+                if self.datalst[i][0] == "D":
                     data[i] = self.datalst[i][2:7]
+                else:
+                    data[i] = None
             x = np.linspace(self.monitor.range_x_min, self.monitor.range_x_max, len(data))
             df = pd.DataFrame()
             df["angel"] = x

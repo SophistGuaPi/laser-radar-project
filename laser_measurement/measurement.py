@@ -54,7 +54,7 @@ class measure(QtCore.QObject):
             if data:
                 self.data = data.decode('utf-8')
                 self.new_measure.emit()
-                break
+                return self.data
 
     def init_write(self):
         self.ser.write((f"iSET:7,{self.frequent}\r\n").encode())
