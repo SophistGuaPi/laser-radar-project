@@ -139,49 +139,40 @@ class gui:
     def clicked_pushbutton_18(self):
         if self.ui.comboBox_3.currentText() == "扫描区域（场扫描）":
             def plt_mat(lst):
-                max_datalen = len(max(lst[0], key=len))
-                for i in range(len(lst)):
-                    lst_len = len(lst[i][0])
-                    supplement_len = max_datalen - lst_len
-                    if supplement_len:
-                        split_len = int(lst_len / (supplement_len + 1))
-                        for j in range(supplement_len):
-                            lst[i][0].insert(split_len * (j + 1), 0)
-                            lst[i][1].insert(split_len * (j + 1), 0)
-
-                data = np.array(lst)
-                # Convert each 2D matrix into a Pandas DataFrame
-                dfs = [pd.DataFrame(x) for x in data]
-                # Create MultiIndex with 3 levels
-                indices = pd.MultiIndex.from_product([range(s) for s in data.shape])
-                # Concatenate all Pandas DataFrames into one large DataFrame
-                df_final = pd.concat(dfs, keys=indices)
+                # data = np.array(lst)
+                # # Convert each 2D matrix into a Pandas DataFrame
+                # dfs = [pd.DataFrame(x) for x in data]
+                # # Create MultiIndex with 3 levels
+                # indices = pd.MultiIndex.from_product([range(s) for s in data.shape])
+                # # Concatenate all Pandas DataFrames into one large DataFrame
+                # df_final = pd.concat(dfs, keys=indices)
 
                 fig = plt.figure()
-                X = np.array([lst[i][0] for i in range(len(lst))])
+                X = np.array([lst[i][1] for i in range(len(lst))])
                 y = np.linspace(0, 1, len(lst))
                 _, Y = np.meshgrid(X[0], y)
                 # lst = np.array([lst[i][1] for i in range(len(lst))])
-                lst = np.array([lst[i][1] for i in range(len(lst))])
+                lst = np.array([lst[i][0] for i in range(len(lst))])
                 ax = fig.add_subplot(1, 1, 1, projection="3d")
-                ax.plot_wireframe(X, Y, lst, rcount=15, ccount=15)
+                ax.contour(X, Y, lst, offset=-2, cmap='rainbow')  # 绘制等高线
+                # ax.plot_wireframe(X,Y,lst,rcount = 15,ccount = 15)
+                ax.plot_surface(X, Y, lst, cmap='rainbow')
                 plt.show()
-            def extract_data():
-                def reshape_data(data):  # 将数据按照停止位重塑为二维
-                    datalst = [[]]
-                    data_len = len(data)
-                    line_num = 0
-                    for i in range(data_len):
-                        if data:
-                            a = data.pop(0)
-                            # print(a,line_num)
-                            datalst[line_num].append(a)
-                            if a == 'OK\r\n' and data[1][0] == "D":
-                                line_num += 1
-                                datalst.append([])
-                    return datalst
+            def reshape_data(data):  # 将数据按照停止位重塑为二维
+                datalst = [[]]
+                data_len = len(data)
+                line_num = 0
+                for i in range(data_len):
+                    if data:
+                        a = data.pop(0)
+                        # print(a,line_num)
+                        datalst[line_num].append(a)
+                        if a == 'OK\r\n' and data[1][0] == "D":
+                            line_num += 1
+                            datalst.append([])
+                return datalst
+            def extract_data(reshape_data):
                 datalst = []
-                reshape_data = reshape_data(self.task.data)
                 for j in range(len(reshape_data)):
                     data = [None] * len(reshape_data[j])
                     for i in range(len(data)):
@@ -190,12 +181,27 @@ class gui:
                         else:
                             data[i] = None
                     data = list(filter(None, data))
-                    datalst.append([data, np.linspace(self.monitor.range_x_min, self.monitor.range_x_max, len(data))])
+                    datalst.append([data, list(np.linspace(self.monitor.range_x_min, self.monitor.range_x_max, len(data)))])
                 return datalst
-            # def
-            data = extract_data()
+            def fill_data(lst):
+                max_datalen = len(max(lst[0],key=len))
+                for i in range(len(lst)):
+                    lst_len = len(lst[i][0])
+                    supplement_len = max_datalen - lst_len
+                    if supplement_len:
+                        split_len = int(lst_len/(supplement_len+1))
 
+                    for j in range(supplement_len):
+                        lst[i][0].insert(split_len*(j+1), lst[i][0][split_len*(j+1)-1])
+                        # np.insert(lst[i][1], split_len*(j+1), lst[i][1][split_len*(j+1)-1])
+                        lst[i][1].insert(split_len*(j+1), lst[i][1][split_len*(j+1)-1])
+                return lst
 
+            data = reshape_data(self.task.data)
+            data = extract_data(data)
+            data = fill_data(data)
+            print(data)
+            plt_mat(data)
 
         else:
             data = [None] * len(self.datalst)
