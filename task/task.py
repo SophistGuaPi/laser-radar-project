@@ -113,7 +113,7 @@ class task(QtCore.QObject):
             self.monitor.x_axis[0] = 0
             self.monitor.x_axis[3] = speed
 
-            self.monitor.y_axis[4] = int(self.monitor.y_axis[3] / self.ser.frequent)
+            self.monitor.y_axis[4] = int(((self.monitor.range_y_max-self.monitor.range_y_min) / self.ser.times_y) * (1000 / 0.714286))
             self.monitor.del_move_y()
             self.monitor.get_position_y()
 

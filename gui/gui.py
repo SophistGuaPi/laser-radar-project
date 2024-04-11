@@ -8,8 +8,11 @@ import time
 from PyQt5 import QtCore, QtGui, QtWidgets
 import sys
 import threading
+
 import gui.gui0 as gui0
+import gui.plot as plot
 import task.task as task
+
 import pandas as pd
 import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
@@ -137,85 +140,107 @@ class gui:
         t.start()
 
     def clicked_pushbutton_18(self):
-        if self.ui.comboBox_3.currentText() == "扫描区域（场扫描）":
-            def plt_mat(lst):
-                # data = np.array(lst)
-                # # Convert each 2D matrix into a Pandas DataFrame
-                # dfs = [pd.DataFrame(x) for x in data]
-                # # Create MultiIndex with 3 levels
-                # indices = pd.MultiIndex.from_product([range(s) for s in data.shape])
-                # # Concatenate all Pandas DataFrames into one large DataFrame
-                # df_final = pd.concat(dfs, keys=indices)
+        if self.task.data[0]:
+            if self.ui.comboBox_3.currentText() == "扫描区域（场扫描）":
+                def plt_mat(lst):
+                    # data = np.array(lst)
+                    # # Convert each 2D matrix into a Pandas DataFrame
+                    # dfs = [pd.DataFrame(x) for x in data]
+                    # # Create MultiIndex with 3 levels
+                    # indices = pd.MultiIndex.from_product([range(s) for s in data.shape])
+                    # # Concatenate all Pandas DataFrames into one large DataFrame
+                    # df_final = pd.concat(dfs, keys=indices)
 
-                fig = plt.figure()
-                X = np.array([lst[i][1] for i in range(len(lst))])
-                y = np.linspace(0, 1, len(lst))
-                _, Y = np.meshgrid(X[0], y)
-                # lst = np.array([lst[i][1] for i in range(len(lst))])
-                lst = np.array([lst[i][0] for i in range(len(lst))])
-                ax = fig.add_subplot(1, 1, 1, projection="3d")
-                ax.contour(X, Y, lst, offset=-2, cmap='rainbow')  # 绘制等高线
-                # ax.plot_wireframe(X,Y,lst,rcount = 15,ccount = 15)
-                ax.plot_surface(X, Y, lst, cmap='rainbow')
-                plt.show()
-            def reshape_data(data):  # 将数据按照停止位重塑为二维
-                datalst = [[]]
-                data_len = len(data)
-                line_num = 0
-                for i in range(data_len):
-                    if data:
-                        a = data.pop(0)
-                        # print(a,line_num)
-                        datalst[line_num].append(a)
-                        if a == 'OK\r\n' and data[1][0] == "D":
-                            line_num += 1
-                            datalst.append([])
-                return datalst
-            def extract_data(reshape_data):
-                datalst = []
-                for j in range(len(reshape_data)):
-                    data = [None] * len(reshape_data[j])
-                    for i in range(len(data)):
-                        if reshape_data[j][i][0] == "D":
-                            data[i] = float(reshape_data[j][i][2:7])
-                        else:
-                            data[i] = None
-                    data = list(filter(None, data))
-                    datalst.append([data, list(np.linspace(self.monitor.range_x_min, self.monitor.range_x_max, len(data)))])
-                return datalst
-            def fill_data(lst):
-                max_datalen = len(max(lst[0],key=len))
-                for i in range(len(lst)):
-                    lst_len = len(lst[i][0])
-                    supplement_len = max_datalen - lst_len
-                    if supplement_len:
-                        split_len = int(lst_len/(supplement_len+1))
+                    F=plot.MyFigure(width=5, height=4, dpi=100)
+                    F.fig.suptitle("Figuer")
+                    max_depth = max([lst[i][0][j] for i in range(len(lst)) for j in range(len(lst[i][0]))])
+                    X = np.array([lst[i][1] for i in range(len(lst))])
+                    y = np.linspace(self.monitor.range_y_min, self.monitor.range_y_max, len(lst))
+                    _, Y = np.meshgrid(X[0], y)
+                    # lst = np.array([lst[i][1] for i in range(len(lst))])
+                    R = np.array([lst[i][0] for i in range(len(lst))])
+                    z0=R[0][0]
 
-                    for j in range(supplement_len):
-                        lst[i][0].insert(split_len*(j+1), lst[i][0][split_len*(j+1)-1])
-                        # np.insert(lst[i][1], split_len*(j+1), lst[i][1][split_len*(j+1)-1])
-                        lst[i][1].insert(split_len*(j+1), lst[i][1][split_len*(j+1)-1])
-                return lst
+                    X = np.array([R[i] * np.sin((X[i] * np.pi) / 180) for i in range(len(X))])
+                    Y = np.array([R[i] * np.sin((Y[i] * np.pi) / 180) for i in range(len(Y))])
+                    Z = np.array([R[i] * np.cos((X[i] * np.pi) / 180) * np.cos((Y[i] * np.pi) / 180) for i in range(len(R))])
 
-            data = reshape_data(self.task.data)
-            data = extract_data(data)
-            data = fill_data(data)
-            print(data)
-            plt_mat(data)
+                    ax = F.fig.add_subplot(1, 1, 1, projection="3d")
+                    # ax.plot_wireframe(X,Y,lst,rcount = 15,ccount = 15)
+                    surf = ax.plot_surface(X, Y, Z, cmap='rainbow')
+                    ax.contour(X, Y, Z, offset=max_depth + 0.05, cmap='rainbow')  # 绘制等高线
+                    F.fig.colorbar(surf, shrink=0.5, aspect=5)
+                    self.ui.gridLayout.addWidget(F, 0, 0)
 
-        else:
-            data = [None] * len(self.datalst)
-            for i in range(len(data)):
-                if self.datalst[i][0] == "D":
-                    data[i] = self.datalst[i][2:7]
-                else:
-                    data[i] = None
-            x = np.linspace(self.monitor.range_x_min, self.monitor.range_x_max, len(data))
-            df = pd.DataFrame()
-            df["angel"] = x
-            df["distance"] = data
-            print(df)
-            df.to_excel("./data/data0.xlsx")
+                def reshape_data(data):  # 将数据按照停止位重塑为二维
+                    datalst = [[]]
+                    data_len = len(data)
+                    line_num = 0
+                    for i in range(data_len):
+                        if data:
+                            a = data.pop(0)
+                            # print(a,line_num)
+                            datalst[line_num].append(a)
+                            if a == 'OK\r\n' and data[1][0] == "D":
+                                line_num += 1
+                                datalst.append([])
+                    return datalst
+                def extract_data(reshape_data):
+                    datalst = []
+                    for j in range(len(reshape_data)):
+                        data = [None] * len(reshape_data[j])
+                        for i in range(len(data)):
+                            if reshape_data[j][i][0] == "D":
+                                data[i] = float(reshape_data[j][i][2:7])
+                            else:
+                                data[i] = None
+                        data = list(filter(None, data))
+                        datalst.append([data, list(np.linspace(self.monitor.range_x_min, self.monitor.range_x_max, len(data)))])
+                    return datalst
+                def fill_data(lst):
+                    max_datalen = len(max([lst[i][0] for i in range(len(lst))], key=len))
+                    for i in range(len(lst)):
+                        lst_len = len(lst[i][0])
+                        supplement_len = max_datalen - lst_len
+                        if supplement_len:
+                            if lst_len / (supplement_len + 1) < 1:
+                                j = 0
+                                while lst_len / (supplement_len + 1) < 1:
+                                    lst_len = len(lst[i][0])
+                                    supplement_len = max_datalen - lst_len
+                                    if (j + 1) + j > len(lst[i][0]):
+                                        j = 0
+                                    lst[i][0].insert((j + 1) + j, lst[i][0][(j + 1) + j - 1])
+                                    lst[i][1].insert((j + 1) + j, lst[i][1][(j + 1) + j - 1])
+                                    j += 1
+                            split_len = int(lst_len / (supplement_len + 1))
+                        lst_len = len(lst[i][0])
+                        supplement_len = max_datalen - lst_len
+                        for j in range(supplement_len):
+                            lst[i][0].insert(split_len * (j + 1) + j, lst[i][0][split_len * (j + 1) + j - 1])
+                            lst[i][1].insert(split_len * (j + 1) + j, lst[i][1][split_len * (j + 1) + j - 1])
+                    return lst
+
+                data = reshape_data(self.task.data[2:-1])
+                data = extract_data(data)
+                print(data)
+                data = fill_data(data)
+                print(data)
+                plt_mat(data)
+
+            else:
+                data = [None] * len(self.datalst)
+                for i in range(len(data)):
+                    if self.datalst[i][0] == "D":
+                        data[i] = self.datalst[i][2:7]
+                    else:
+                        data[i] = None
+                x = np.linspace(self.monitor.range_x_min, self.monitor.range_x_max, len(data))
+                df = pd.DataFrame()
+                df["angel"] = x
+                df["distance"] = data
+                print(df)
+                df.to_excel("./data/data0.xlsx")
 
     def clicked_pushbutton_15(self):
         def a():
