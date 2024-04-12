@@ -50,6 +50,15 @@ class gui:
         self.ui.pushButton_12.clicked.connect(self.clicked_pushbutton_12)
         self.ui.pushButton_17.clicked.connect(self.clicked_pushbutton_17)
         self.ui.pushButton_18.clicked.connect(self.clicked_pushbutton_18)
+        self.ui.pushButton_10.clicked.connect(self.clicked_pushbutton_10)
+        self.ui.pushButton_11.clicked.connect(self.clicked_pushbutton_11)
+        self.ui.pushButton_13.clicked.connect(self.clicked_pushbutton_13)
+        self.ui.pushButton_16.clicked.connect(self.clicked_pushbutton_4)
+        self.ui.pushButton_19.clicked.connect(self.clicked_pushbutton_3)
+        self.ui.pushButton_24.clicked.connect(self.clicked_pushbutton)
+        self.ui.pushButton_25.clicked.connect(self.clicked_pushbutton_2)
+        self.ui.pushButton_26.clicked.connect(self.clicked_pushbutton_5)
+        self.ui.pushButton_27.clicked.connect(self.clicked_pushbutton_6)
         self.ui.doubleSpinBox_4.editingFinished.connect(self.value_change_spinbox_4)
         self.ui.doubleSpinBox_3.editingFinished.connect(self.value_change_spinbox_3)
         self.ui.doubleSpinBox_7.editingFinished.connect(self.value_change_spinbox_7)
@@ -60,6 +69,8 @@ class gui:
         self.ui.doubleSpinBox_15.editingFinished.connect(self.value_change_spinbox_15)
         self.ui.doubleSpinBox_12.editingFinished.connect(self.value_change_spinbox_12)
         self.ui.doubleSpinBox_20.editingFinished.connect(self.value_change_spinbox_20)
+        self.ui.doubleSpinBox_5.editingFinished.connect(self.value_change_spinbox_5)
+        self.ui.doubleSpinBox_6.editingFinished.connect(self.value_change_spinbox_6)
         self.ui.spinBox_16.editingFinished.connect(self.value_change_spinbox_16)
         self.ui.spinBox_18.editingFinished.connect(self.value_change_spinbox_18)
         self.monitor.pos_change_x.connect(self.show_pos_x)
@@ -78,21 +89,29 @@ class gui:
         self.monitor.x_axis[0] = 0
         self.ui.pushButton.setChecked(True)
         self.ui.pushButton_2.setChecked(False)
+        self.ui.pushButton_24.setChecked(True)
+        self.ui.pushButton_25.setChecked(False)
 
     def clicked_pushbutton_2(self):
         self.monitor.x_axis[0] = 1
         self.ui.pushButton_2.setChecked(True)
         self.ui.pushButton.setChecked(False)
+        self.ui.pushButton_25.setChecked(True)
+        self.ui.pushButton_24.setChecked(False)
 
     def clicked_pushbutton_5(self):
         self.monitor.y_axis[0] = 0
         self.ui.pushButton_5.setChecked(True)
         self.ui.pushButton_6.setChecked(False)
+        self.ui.pushButton_26.setChecked(True)
+        self.ui.pushButton_27.setChecked(False)
 
     def clicked_pushbutton_6(self):
         self.monitor.y_axis[0] = 1
         self.ui.pushButton_6.setChecked(True)
         self.ui.pushButton_5.setChecked(False)
+        self.ui.pushButton_27.setChecked(True)
+        self.ui.pushButton_26.setChecked(False)
 
     def clicked_pushbutton_4(self):
         def a():
@@ -125,6 +144,9 @@ class gui:
 
     def clicked_pushbutton_17(self):
         self.datalst = []
+        self.monitor.x_axis[0] = 0
+        self.monitor.y_axis[0] = 0
+
         def a():
             if self.ui.comboBox_3.currentText() == "扫描x":
                 self.task.scan_line_x()
@@ -151,7 +173,7 @@ class gui:
                     # # Concatenate all Pandas DataFrames into one large DataFrame
                     # df_final = pd.concat(dfs, keys=indices)
 
-                    F=plot.MyFigure(width=5, height=4, dpi=100)
+                    F = plot.MyFigure(width=5, height=4, dpi=100)
                     F.fig.suptitle("Figuer")
                     max_depth = max([lst[i][0][j] for i in range(len(lst)) for j in range(len(lst[i][0]))])
                     X = np.array([lst[i][1] for i in range(len(lst))])
@@ -159,11 +181,12 @@ class gui:
                     _, Y = np.meshgrid(X[0], y)
                     # lst = np.array([lst[i][1] for i in range(len(lst))])
                     R = np.array([lst[i][0] for i in range(len(lst))])
-                    z0=R[0][0]
+                    z0 = R[0][0]
 
                     X = np.array([R[i] * np.sin((X[i] * np.pi) / 180) for i in range(len(X))])
                     Y = np.array([R[i] * np.sin((Y[i] * np.pi) / 180) for i in range(len(Y))])
-                    Z = np.array([R[i] * np.cos((X[i] * np.pi) / 180) * np.cos((Y[i] * np.pi) / 180) for i in range(len(R))])
+                    Z = np.array(
+                        [R[i] * np.cos((X[i] * np.pi) / 180) * np.cos((Y[i] * np.pi) / 180) for i in range(len(R))])
 
                     ax = F.fig.add_subplot(1, 1, 1, projection="3d")
                     # ax.plot_wireframe(X,Y,lst,rcount = 15,ccount = 15)
@@ -185,6 +208,7 @@ class gui:
                                 line_num += 1
                                 datalst.append([])
                     return datalst
+
                 def extract_data(reshape_data):
                     datalst = []
                     for j in range(len(reshape_data)):
@@ -195,8 +219,10 @@ class gui:
                             else:
                                 data[i] = None
                         data = list(filter(None, data))
-                        datalst.append([data, list(np.linspace(self.monitor.range_x_min, self.monitor.range_x_max, len(data)))])
+                        datalst.append(
+                            [data, list(np.linspace(self.monitor.range_x_min, self.monitor.range_x_max, len(data)))])
                     return datalst
+
                 def fill_data(lst):
                     max_datalen = len(max([lst[i][0] for i in range(len(lst))], key=len))
                     for i in range(len(lst)):
@@ -220,8 +246,7 @@ class gui:
                             lst[i][0].insert(split_len * (j + 1) + j, lst[i][0][split_len * (j + 1) + j - 1])
                             lst[i][1].insert(split_len * (j + 1) + j, lst[i][1][split_len * (j + 1) + j - 1])
                     return lst
-
-                data = reshape_data(self.task.data[2:-1])
+                data = reshape_data(self.task.data)
                 data = extract_data(data)
                 print(data)
                 data = fill_data(data)
@@ -249,11 +274,37 @@ class gui:
         t = threading.Thread(target=a, daemon=True)
         t.start()
 
+    def clicked_pushbutton_10(self):
+        self.ser.mode = "open"
+        self.ser.write_serial()
+
+    def clicked_pushbutton_11(self):
+        self.monitor.init_axis()
+
+    def clicked_pushbutton_13(self):
+        self.ui.doubleSpinBox_14.setValue(self.monitor.Pos_x.value / 1000)
+        self.ui.doubleSpinBox_15.setValue(self.monitor.Pos_y.value / 1000 * 0.714286)
+        self.value_change_spinbox_14()
+        self.value_change_spinbox_15()
+        self.ser.mode = "close"
+        self.ser.write_serial()
+        self.clicked_pushbutton_15()
+
     def value_change_spinbox_4(self):
         self.monitor.x_axis[4] = int(self.ui.doubleSpinBox_4.value() * 1000)
+        self.ui.doubleSpinBox_5.setValue(self.ui.doubleSpinBox_4.value())
 
     def value_change_spinbox_3(self):
         self.monitor.y_axis[4] = int(self.ui.doubleSpinBox_3.value() * (1000 / 0.714286))
+        self.ui.doubleSpinBox_6.setValue(self.ui.doubleSpinBox_3.value())
+
+    def value_change_spinbox_5(self):
+        self.monitor.x_axis[4] = int(self.ui.doubleSpinBox_5.value() * 1000)
+        self.ui.doubleSpinBox_4.setValue(self.ui.doubleSpinBox_5.value())
+
+    def value_change_spinbox_6(self):
+        self.monitor.y_axis[4] = int(self.ui.doubleSpinBox_6.value() * (1000 / 0.714286))
+        self.ui.doubleSpinBox_3.setValue(self.ui.doubleSpinBox_6.value())
 
     def value_change_spinbox_7(self):
         self.monitor.x_axis[3] = int(self.ui.doubleSpinBox_7.value() * 1000)
@@ -291,6 +342,8 @@ class gui:
         self.ui.spinBox_16.setValue(
             int((self.monitor.range_x_max - self.monitor.range_x_min) * self.ser.frequent * 1000 / self.monitor.x_axis[
                 3]))
+        self.ui.doubleSpinBox_4.setValue(self.ui.doubleSpinBox_14.value() - self.ui.doubleSpinBox_13.value())
+        self.ui.doubleSpinBox_5.setValue(self.ui.doubleSpinBox_14.value() - self.ui.doubleSpinBox_13.value())
         self.ser.times_x = self.ui.spinBox_16.value()
 
     def value_change_spinbox_11(self):
@@ -305,13 +358,15 @@ class gui:
         self.ui.spinBox_18.setValue(
             int((self.monitor.range_y_max - self.monitor.range_y_min) * self.ser.frequent * 1000 / (
                     self.monitor.y_axis[3] / 0.714286)))
+        self.ui.doubleSpinBox_3.setValue(self.ui.doubleSpinBox_15.value() - self.ui.doubleSpinBox_11.value())
+        self.ui.doubleSpinBox_6.setValue(self.ui.doubleSpinBox_15.value() - self.ui.doubleSpinBox_11.value())
         self.ser.times_y = self.ui.spinBox_18.value()
 
     def value_change_spinbox_16(self):
         pass
 
     def value_change_spinbox_18(self):
-        pass
+        self.ser.times_y = self.ui.spinBox_18.value()
 
     def show_pos_x(self):
         self.ui.textEdit.setText(str(self.monitor.Pos_x.value / 1000))
@@ -388,6 +443,7 @@ class gui:
         x = np.linspace(self.monitor.range_x_min, self.monitor.range_x_max, len(data))
         lst = [data, x]
         self.dfs.append(lst)
+
 
 # class CircularSequenceQueue(object):
 #     def __init__(self):

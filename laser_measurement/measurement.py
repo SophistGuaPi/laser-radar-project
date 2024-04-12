@@ -69,11 +69,14 @@ class measure(QtCore.QObject):
             self.ser.write(f"iFACM\r\n".encode())
         if self.mode == "open":
             self.ser.write(f"iLD:1\r\n".encode())
+            self.read()
         if self.mode == "close":
             self.ser.write(f"iLD:0\r\n".encode())
+            self.read()
 
     def stop_auto(self):
         self.ser.write((f"iHALT\r\n").encode())
+        self.read()
 
     def stop_serial(self):
         if self.ser.is_open:
