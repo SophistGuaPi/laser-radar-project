@@ -162,8 +162,9 @@ class gui:
         t.start()
 
     def clicked_pushbutton_18(self):
-        if self.task.data[0]:
+        if self.task.datalst[0]:
             if self.ui.comboBox_3.currentText() == "扫描区域（场扫描）":
+
                 def plt_mat(lst):
                     # data = np.array(lst)
                     # # Convert each 2D matrix into a Pandas DataFrame
@@ -246,12 +247,16 @@ class gui:
                             lst[i][0].insert(split_len * (j + 1) + j, lst[i][0][split_len * (j + 1) + j - 1])
                             lst[i][1].insert(split_len * (j + 1) + j, lst[i][1][split_len * (j + 1) + j - 1])
                     return lst
-                data = reshape_data(self.task.data)
+
+                data = reshape_data(self.task.datalst)
                 data = extract_data(data)
                 print(data)
+                while data[0] == [[], []]:
+                    data.pop(0)
                 data = fill_data(data)
                 print(data)
                 plt_mat(data)
+                print(self.task.time_data)
 
             else:
                 data = [None] * len(self.datalst)
@@ -277,6 +282,7 @@ class gui:
     def clicked_pushbutton_10(self):
         self.ser.mode = "open"
         self.ser.write_serial()
+        self.ser.read()
 
     def clicked_pushbutton_11(self):
         self.monitor.init_axis()
@@ -416,7 +422,6 @@ class gui:
                 self.ser.write_serial()
             elif self.ui.comboBox.currentText() == "激光常闭":
                 self.ser.mode = "close"
-                self.ser.write_serial()
 
         t = threading.Thread(target=a, daemon=True)
         t.start()

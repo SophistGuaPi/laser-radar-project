@@ -49,9 +49,11 @@ class measure(QtCore.QObject):
             self.thread.join()
 
     def read(self):
+        start = time.perf_counter()
         while True:
             data = self.ser.readline()
             if data:
+                print(time.perf_counter()-start)
                 self.data = data.decode('utf-8')
                 self.new_measure.emit()
                 return self.data

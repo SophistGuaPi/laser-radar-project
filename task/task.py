@@ -25,7 +25,19 @@ class task(QtCore.QObject):
         self.destination_x = 0
         self.destination_y = 0
 
+        #统计数据
+        self.rank = 0
+        self.line_times = 0
+        self.start_time = time.perf_counter()
+        self.end_time = 0
+        self.time_data = []
+
     def scan_line_x(self):
+        self.rank += 1
+        self.line_times = 0
+        self.start_time = time.perf_counter()
+        t = []
+
         def mov():
             self.monitor.del_move_x()
             self.monitor.get_position_x()
@@ -35,6 +47,9 @@ class task(QtCore.QObject):
                 self.stop_x = True
                 while self.destination_x != self.monitor.Pos_x.value:
                     self.data.append(self.ser.read())
+                    
+                    self.line_times += 1
+                    t.append(time.perf_counter() - self.start_time)
                 else:
                     self.ser.stop_auto()
 
@@ -60,6 +75,8 @@ class task(QtCore.QObject):
         t2 = threading.Thread(target=measure, daemon=True)
         t1.start()
         t2.start()
+
+        self.time_data.append(t)
 
     def scan_line_y(self):
         def mov():
@@ -119,6 +136,10 @@ class task(QtCore.QObject):
 
             self.monitor.get_position_x()
             self.monitor.get_position_y()
+
+            self.datalst += self.data
+            self.data = []
+
             self.complete_line_scan.emit()
             lock.acquire(False)
 
@@ -128,7 +149,7 @@ class task(QtCore.QObject):
             # self.datalst.append(self.data)
             while self.destination_x != self.monitor.Pos_x.value:
                 time.sleep(0.01)
-            time.sleep(1.2)
+            time.sleep(1.3)
             next_row()
             time.sleep(0.2)
 
