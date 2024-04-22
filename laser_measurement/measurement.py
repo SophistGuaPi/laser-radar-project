@@ -53,7 +53,7 @@ class measure(QtCore.QObject):
         while True:
             data = self.ser.readline()
             if data:
-                print(time.perf_counter()-start)
+                # print(time.perf_counter()-start)
                 self.data = data.decode('utf-8')
                 self.new_measure.emit()
                 return self.data
@@ -84,10 +84,6 @@ class measure(QtCore.QObject):
         if self.ser.is_open:
             self.ser.write((f"iHALT\r\n").encode())
             self.ser.close()
-
-
-
-
 
 if __name__ == "__main__":
     pass

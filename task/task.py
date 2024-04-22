@@ -45,9 +45,10 @@ class task(QtCore.QObject):
         def measure():
             def read():
                 self.stop_x = True
-                while self.destination_x != self.monitor.Pos_x.value:
+                while self.destination_x > self.monitor.Pos_x.value + 1:
                     self.data.append(self.ser.read())
-                    
+                    # self.data.append([self.ser.read(), self.monitor.Pos_x.value])
+
                     self.line_times += 1
                     t.append(time.perf_counter() - self.start_time)
                 else:

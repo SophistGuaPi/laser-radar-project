@@ -958,14 +958,14 @@ p, li { white-space: pre-wrap; }
                 <item>
                  <widget class="QPushButton" name="pushButton_11">
                   <property name="text">
-                   <string>设定原点（激光打在平面的右上角）</string>
+                   <string>设定原点（激光打在平面的左上角）</string>
                   </property>
                  </widget>
                 </item>
                 <item>
                  <widget class="QPushButton" name="pushButton_13">
                   <property name="text">
-                   <string>设定终点（激光打在平面的左下角）</string>
+                   <string>设定终点（激光打在平面的右下角）</string>
                   </property>
                  </widget>
                 </item>

@@ -44,7 +44,7 @@ class monitor(QtCore.QObject):
         self.range_y_min = 0
         self.range_y_max = 1
 
-        self.x_axis = [0, 0, 1000, 10000, 1000, 0, 1, 1]
+        self.x_axis = [0, 2, 1000, 10000, 1000, 0, 1, 1]
         self.y_axis = [0, 0, 1000, 10000, 1000, 0, 1, 1]
 
     def init_axis(self):

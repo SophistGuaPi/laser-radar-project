@@ -248,6 +248,7 @@ class gui:
                             lst[i][1].insert(split_len * (j + 1) + j, lst[i][1][split_len * (j + 1) + j - 1])
                     return lst
 
+                print(self.task.datalst)
                 data = reshape_data(self.task.datalst)
                 data = extract_data(data)
                 print(data)
@@ -256,7 +257,7 @@ class gui:
                 data = fill_data(data)
                 print(data)
                 plt_mat(data)
-                print(self.task.time_data)
+                # print(self.task.time_data)
 
             else:
                 data = [None] * len(self.datalst)
@@ -422,6 +423,7 @@ class gui:
                 self.ser.write_serial()
             elif self.ui.comboBox.currentText() == "激光常闭":
                 self.ser.mode = "close"
+                self.ser.write_serial()
 
         t = threading.Thread(target=a, daemon=True)
         t.start()
